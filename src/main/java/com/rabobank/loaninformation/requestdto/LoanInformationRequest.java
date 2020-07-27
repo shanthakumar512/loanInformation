@@ -146,5 +146,10 @@ public class LoanInformationRequest {
 	public void setOriginationDate(Date originationDate) {
 		this.originationDate = originationDate;
 	}
+	@Override
+	public String toString() {
+		return "Loan User Email:"+loanUserEmail+"Loan NUmber:"+ loanNumber+ " Loan Amount" +loanAmount;
+	}
+	
 
 }

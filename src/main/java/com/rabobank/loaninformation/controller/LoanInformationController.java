@@ -4,10 +4,11 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,37 +23,47 @@ import com.rabobank.userInformation.exceptions.LoanInformationNotFoundException;
 import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
 
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/loanInfo")
 public class LoanInformationController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoanInformationController.class);
 
 	@Autowired
 	LoanInformationService loanInformationService;
 
 
 	@PostMapping("/addLoanInfo")
-	public ResponseEntity<?> addLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException {
+	public ResponseEntity<List<LoanInformation>> addLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException, LoanInformationNotFoundException {
+		logger.info("Entered addLoanInformation method {}", loanInformationRequest);
 		loanInformationService.addLoanInformation(loanInformationRequest);
-		return  new ResponseEntity<String>("Loan Information Added Successfully", HttpStatus.OK);
+		logger.info("Loan Information entered successfully {}", loanInformationRequest.getLoanNumber());
+		List<LoanInformation> loanInformationList =	loanInformationService.findLoanInfoByLoanUserEmail(loanInformationRequest.getLoanUserEmail());
+		return  new ResponseEntity<>(loanInformationList, HttpStatus.OK);
 	}
 	
 	@PostMapping("/updateLoanInfo")
-	public ResponseEntity<?> updateLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException {	
-		loanInformationService.updateLoanInformation(loanInformationRequest);
-		return  new ResponseEntity<String>("Loan Information updated Successfully", HttpStatus.OK);
+	public ResponseEntity<LoanInformation> updateLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException {	
+		logger.info("Entered updateLoanInformation method {}", loanInformationRequest);
+		LoanInformation loanInfo=loanInformationService.updateLoanInformation(loanInformationRequest);
+		logger.info("Updated Loan Information successfully : {}", loanInformationRequest);
+		return  new ResponseEntity<>(loanInfo, HttpStatus.OK);
 	}
 	
 	@GetMapping("/getLoanInfo/{loanNumber}")
-	public ResponseEntity<?> getLoanInfoByLoanNumber(@PathVariable String loanNumber) throws LoanInformationNotFoundException{
+	public ResponseEntity<LoanInformation> getLoanInfoByLoanNumber(@PathVariable String loanNumber) throws LoanInformationNotFoundException{
+		logger.info("Entered getLoanInfoByLoanNumber method {}", loanNumber);
 		LoanInformation loanInfo= loanInformationService.findLoanInfoByLoanNum(loanNumber);
-		return new ResponseEntity<LoanInformation>(loanInfo, HttpStatus.OK);
+		logger.info("Loan Infomation returned {}", loanInfo.getLoanNumber());
+		return new ResponseEntity<>(loanInfo, HttpStatus.OK);
 	}
 	
 	@GetMapping("/getLoanInfoByEmail/{loanUserEmail}")
-	public ResponseEntity<?> getLoanInfoByLoanUserEmail(@PathVariable String loanUserEmail) throws LoanInformationNotFoundException{
+	public ResponseEntity<List<LoanInformation>> getLoanInfoByLoanUserEmail(@PathVariable String loanUserEmail) throws LoanInformationNotFoundException{
+		logger.info("Entered getLoanInfoByLoanUserEmail method {}", loanUserEmail);
 		List<LoanInformation> loanInfo= loanInformationService.findLoanInfoByLoanUserEmail(loanUserEmail);
-		return new ResponseEntity<List<LoanInformation>>(loanInfo, HttpStatus.OK);
+		logger.info("The size of Loan information returned for given Loan User email{}", loanInfo.size());
+		return new ResponseEntity<>(loanInfo, HttpStatus.OK);
 	}
 	
 }

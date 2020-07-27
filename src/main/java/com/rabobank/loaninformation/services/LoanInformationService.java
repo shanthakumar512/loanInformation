@@ -19,7 +19,7 @@ public interface LoanInformationService {
 	
 	public void addLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException;
 	
-	public void updateLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException;
+	public LoanInformation updateLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException;
 	
 	public LoanInformation findLoanInfoByLoanNum(String loanNumber) throws LoanInformationNotFoundException;
 	

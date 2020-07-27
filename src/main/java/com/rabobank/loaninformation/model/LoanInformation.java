@@ -30,6 +30,18 @@ public class LoanInformation implements Serializable  {
 	 */
 	private static final long serialVersionUID = 6738193567057311895L;
 
+	/**
+	 * @return the id
+	 *//*
+	public Long getId() {
+		return id;
+	}
+	*//**
+	 * @param id the id to set
+	 *//*
+	public void setId(Long id) {
+		this.id = id;
+	}*/
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
