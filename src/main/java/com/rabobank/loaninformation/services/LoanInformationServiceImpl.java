@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.repository.LoanInformationRepository;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
-import com.rabobank.userInformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
+import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 
 /**
@@ -30,16 +30,18 @@ public class LoanInformationServiceImpl implements LoanInformationService {
 	@Autowired
 	LoanInformationRepository loanInformationRepository;
 	
-	public void addLoanInformation(LoanInformationRequest addLoanInformationRequest) throws LoanNumberAlreadyExixtsException {
-		logger.info("Entered addLoanInformation() method {} ", addLoanInformationRequest.toString());
-		if(!loanInformationRepository.existsByLoanNumber(addLoanInformationRequest.getLoanNumber())) {
+	public LoanInformation addLoanInformation(LoanInformationRequest addLoanInformationRequest) throws LoanNumberAlreadyExixtsException {
+		logger.info("Entered addLoanInformation() method {} ", addLoanInformationRequest);
+		if(Boolean.FALSE.equals(loanInformationRepository.existsByLoanNumber(addLoanInformationRequest.getLoanNumber()))) {
 			logger.info("Loan Information not already exixts in LoanRepository  for LoanNumber:{} ", addLoanInformationRequest.getLoanNumber());
 			LoanInformation loanInformation= new LoanInformation(addLoanInformationRequest.getLoanUserEmail(),addLoanInformationRequest.getLoanNumber(), addLoanInformationRequest.getLoanAmount(), addLoanInformationRequest.getLoanTerm(), addLoanInformationRequest.getLoanStatus(), addLoanInformationRequest.getLoanMgtFees(),
 					addLoanInformationRequest.getOriginationAccount(), addLoanInformationRequest.getOriginationDate());
 			loanInformationRepository.save(loanInformation);
+			return loanInformation;
 		} else {
 			 throw new LoanNumberAlreadyExixtsException("Loan information already exists for loan Number :"+addLoanInformationRequest.getLoanNumber());
 		}
+		
 	}
 
 	@Override

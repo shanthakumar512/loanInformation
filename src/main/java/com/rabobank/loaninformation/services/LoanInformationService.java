@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
-import com.rabobank.userInformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
+import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 
 /**
@@ -17,7 +17,7 @@ import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
  */
 public interface LoanInformationService {
 	
-	public void addLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException;
+	public LoanInformation addLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException;
 	
 	public LoanInformation updateLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException;
 	

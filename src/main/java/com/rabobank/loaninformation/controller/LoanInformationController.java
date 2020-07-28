@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
 import com.rabobank.loaninformation.services.LoanInformationService;
-import com.rabobank.userInformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
+import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 
 @RestController
@@ -34,6 +35,7 @@ public class LoanInformationController {
 
 
 	@PostMapping("/addLoanInfo")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<LoanInformation>> addLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException, LoanInformationNotFoundException {
 		logger.info("Entered addLoanInformation method {}", loanInformationRequest);
 		loanInformationService.addLoanInformation(loanInformationRequest);
@@ -43,6 +45,7 @@ public class LoanInformationController {
 	}
 	
 	@PostMapping("/updateLoanInfo")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<LoanInformation> updateLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException {	
 		logger.info("Entered updateLoanInformation method {}", loanInformationRequest);
 		LoanInformation loanInfo=loanInformationService.updateLoanInformation(loanInformationRequest);
@@ -51,6 +54,7 @@ public class LoanInformationController {
 	}
 	
 	@GetMapping("/getLoanInfo/{loanNumber}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<LoanInformation> getLoanInfoByLoanNumber(@PathVariable String loanNumber) throws LoanInformationNotFoundException{
 		logger.info("Entered getLoanInfoByLoanNumber method {}", loanNumber);
 		LoanInformation loanInfo= loanInformationService.findLoanInfoByLoanNum(loanNumber);
@@ -59,6 +63,7 @@ public class LoanInformationController {
 	}
 	
 	@GetMapping("/getLoanInfoByEmail/{loanUserEmail}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<LoanInformation>> getLoanInfoByLoanUserEmail(@PathVariable String loanUserEmail) throws LoanInformationNotFoundException{
 		logger.info("Entered getLoanInfoByLoanUserEmail method {}", loanUserEmail);
 		List<LoanInformation> loanInfo= loanInformationService.findLoanInfoByLoanUserEmail(loanUserEmail);

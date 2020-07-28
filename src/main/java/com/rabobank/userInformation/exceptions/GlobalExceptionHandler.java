@@ -1,4 +1,4 @@
-package com.rabobank.userInformation.exceptions;
+package com.rabobank.userinformation.exceptions;
 
 import java.io.IOException;
 import java.util.ArrayList;

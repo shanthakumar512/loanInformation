@@ -5,9 +5,11 @@ package com.rabobank.loaninformation.controller;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -34,8 +36,8 @@ import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.repository.LoanInformationRepository;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
 import com.rabobank.loaninformation.services.LoanInformationServiceImpl;
-import com.rabobank.userInformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
+import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 /**
  * @author Shanthakumar
@@ -46,8 +48,14 @@ import com.rabobank.userInformation.exceptions.LoanNumberAlreadyExixtsException;
 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @ActiveProfiles("test")
+@FixMethodOrder(MethodSorters.DEFAULT)
 public class LoanInformationControllerUnitTest {
 	
+		private String loanNumber="ABC123454";
+	
+		private String active="ACTIVE";
+	
+		private String originAccount="ACB123476";
 
 		@Autowired
 		private TestRestTemplate restTemplate;
@@ -64,26 +72,19 @@ public class LoanInformationControllerUnitTest {
 		private String getRootUrl() {
 			return "http://localhost:" + port;
 		}
-
-		@Test
-		public void contextLoads() {
-
-		}
-		
-
 		@Test
 		@Rollback(false)
-		public void test_1_CreateEmployee() {
+		public void testCreateLoanInfo() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.c");
 			loanInformation1.setLoanAmount(1234568);
-			loanInformation1.setLoanNumber("ABC1234SH");
+			loanInformation1.setLoanNumber(loanNumber);
 			loanInformation1.setLoanTerm(45);
-			loanInformation1.setLoanStatus("ACTIVE");
+			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1235R5");
 			
-			ResponseEntity<?> postResponse = restTemplate.postForEntity(getRootUrl() + "/loanInfo/addLoanInfo", loanInformation1, LoanInformationRequest.class);
+			ResponseEntity<LoanInformationRequest[]> postResponse = restTemplate.postForEntity(getRootUrl() + "/loanInfo/addLoanInfo", loanInformation1, LoanInformationRequest[].class);
 			
 			assertNotNull(postResponse);
 			assertNotNull(postResponse.getBody());
@@ -91,16 +92,16 @@ public class LoanInformationControllerUnitTest {
 
 		@Test
 		@Rollback(false)
-		public void testUpdateEmployee() throws LoanNumberAlreadyExixtsException {
+		public void testUpdateLoanInfo() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.c");
 			loanInformation1.setLoanAmount(1234568);
-			loanInformation1.setLoanNumber("ABC1234SH");
+			loanInformation1.setLoanNumber("ABC1234S");
 			loanInformation1.setLoanTerm(45);
-			loanInformation1.setLoanStatus("ACTIVE");
+			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
-			loanInformation1.setOriginationAccount("ACB1234");
-			loanInformationservice.addLoanInformation(loanInformation1);
+			loanInformation1.setOriginationAccount("ACB1235R5");
+			
 			
 			ResponseEntity<?> updatedEmployee = restTemplate.postForEntity(getRootUrl() + "/loanInfo/updateLoanInfo", loanInformation1, LoanInformationRequest.class);
 			assertNotNull(updatedEmployee);
@@ -108,11 +109,8 @@ public class LoanInformationControllerUnitTest {
 		@Test
 		@Rollback(false)
 		public void testsGetLoanInfrmationFromLoanNumber() {
-			HttpHeaders headers = new HttpHeaders();
-			HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-			
 			 Map<String, String> uriVariables = new HashMap<>();
-			    uriVariables.put("loanNumber", "ABC1234SH");
+			    uriVariables.put("loanNumber", loanNumber);
 
 			ResponseEntity<LoanInformationRequest> response = restTemplate.getForEntity(getRootUrl() + "loanInfo/getLoanInfo/{loanNumber}", LoanInformationRequest.class,
 			        uriVariables);
@@ -126,12 +124,15 @@ public class LoanInformationControllerUnitTest {
 		HttpHeaders headers = new HttpHeaders();
 		HttpEntity<String> entity = new HttpEntity<>(null, headers);
 		Map<String, String> uriVariables = new HashMap<>();
+		uriVariables.put("loanNumber", loanNumber);
 		uriVariables.put("loanUserEmail", "abc@gmail.c");
-
-		ResponseEntity<?> response = restTemplate.exchange(getRootUrl() + "loanInfo/getLoanInfoByEmail/{loanUserEmail}", HttpMethod.GET, entity, LoanInformationRequest.class, uriVariables);
-
-		assertNotNull(response.getBody());
-	}
+		
+		ResponseEntity<LoanInformationRequest> responseLoanNum = restTemplate.getForEntity(getRootUrl() + "loanInfo/getLoanInfo/{loanNumber}", LoanInformationRequest.class,
+		        uriVariables);
+		assertNotNull(responseLoanNum.getBody());
+		ResponseEntity<LoanInformationRequest[]> responseEmail = restTemplate.exchange(getRootUrl() + "loanInfo/getLoanInfoByEmail/{loanUserEmail}", HttpMethod.GET, entity, LoanInformationRequest[].class, uriVariables);
+		assertNotNull(responseEmail.getBody());
+		}
 		
 		
 		@Test
@@ -142,9 +143,9 @@ public class LoanInformationControllerUnitTest {
 			loanInformation.setLoanAmount(1234568);
 			loanInformation.setLoanNumber("ABC12345");
 			loanInformation.setLoanTerm(45);
-			loanInformation.setLoanStatus("ACTIVE");
+			loanInformation.setLoanStatus(active);
 			loanInformation.setLoanMgtFees(7895);
-			loanInformation.setOriginationAccount("ACB123476");
+			loanInformation.setOriginationAccount(originAccount);
 			loanInformationservice.addLoanInformation(loanInformation);
 			
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
@@ -152,9 +153,9 @@ public class LoanInformationControllerUnitTest {
 			loanInformation1.setLoanAmount(1234568);
 			loanInformation1.setLoanNumber("ABC12345");
 			loanInformation1.setLoanTerm(45);
-			loanInformation1.setLoanStatus("ACTIVE");
+			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
-			loanInformation1.setOriginationAccount("ACB123476");
+			loanInformation1.setOriginationAccount(originAccount);
 			Assertions.assertThrows(LoanNumberAlreadyExixtsException.class,()->loanInformationservice.addLoanInformation(loanInformation1));
 		}
 		
@@ -165,9 +166,9 @@ public class LoanInformationControllerUnitTest {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.c");
 			loanInformation1.setLoanAmount(1234568);
-			loanInformation1.setLoanNumber("ACB123476");
+			loanInformation1.setLoanNumber(originAccount);
 			loanInformation1.setLoanTerm(45);
-			loanInformation1.setLoanStatus("ACTIVE");
+			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1234");
 			Assertions.assertThrows(LoanInformationNotFoundException.class,()->loanInformationservice.updateLoanInformation(loanInformation1));		 	
@@ -175,33 +176,18 @@ public class LoanInformationControllerUnitTest {
 		
 		@Test()
 		@Rollback(false)
-		final void testforGivenLoanNum() throws LoanNumberAlreadyExixtsException, LoanInformationNotFoundException {
+		final void testforGivenLoanNum() throws LoanNumberAlreadyExixtsException {
 
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.c");
 			loanInformation1.setLoanAmount(1234568);
 			loanInformation1.setLoanNumber("ABC1234");
 			loanInformation1.setLoanTerm(45);
-			loanInformation1.setLoanStatus("ACTIVE");
+			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1234");
 			loanInformationservice.addLoanInformation(loanInformation1);
 		}
-		
-		/*@Test()
-		@Rollback(false)
-		final void testTofindLoanInforGivenEmail() throws LoanNumberAlreadyExixtsException, LoanInformationNotFoundException {
-
-			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
-			loanInformation1.setLoanUserEmail("abc@gmail.c");
-			loanInformation1.setLoanAmount(1234568);
-			loanInformation1.setLoanNumber("ABC1234");
-			loanInformation1.setLoanTerm(45);
-			loanInformation1.setLoanStatus("ACTIVE");
-			loanInformation1.setLoanMgtFees(7895);
-			loanInformation1.setOriginationAccount("ACB1234");
-			loanInformationservice.addLoanInformation(loanInformation1);
-		}*/
 		
 		@Test
 		public void givenEmptyDBWhenFindOneByNameThenReturnEmptyOptional() {
@@ -218,7 +204,7 @@ public class LoanInformationControllerUnitTest {
 		@Test
 		public void givenEmptyDBWhenFindOneByNameThenReturnOptional() {
 
-			LoanInformation loaninfo = new LoanInformation("abc@g.m", "LAN12374", 35356436, 33, "ACTIVE", 346, "2535", null);
+			LoanInformation loaninfo = new LoanInformation("abc@g.m", "LAN12374", 35356436, 33, active, 346, "2535", null);
 			loanInformationRepository.save(loaninfo);
 			Optional<LoanInformation> foundloanInfo = loanInformationRepository.findByLoanNumber("LAN12374");
 			assertTrue(foundloanInfo.isPresent());
