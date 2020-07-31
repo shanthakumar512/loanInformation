@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +44,6 @@ public class LoanInformationController {
 	            @ApiResponse(code = 404, message = "not found!!!") })
 
 	@PostMapping("/addLoanInfo")
-	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<LoanInformation>> addLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanNumberAlreadyExixtsException, LoanInformationNotFoundException {
 		logger.info("Entered addLoanInformation method {}", loanInformationRequest);
 		loanInformationService.addLoanInformation(loanInformationRequest);
@@ -63,7 +61,6 @@ public class LoanInformationController {
 	            @ApiResponse(code = 404, message = "not found!!!") })
 	
 	@PostMapping("/updateLoanInfo")
-	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<LoanInformation> updateLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException {	
 		logger.info("Entered updateLoanInformation method {}", loanInformationRequest);
 		LoanInformation loanInfo=loanInformationService.updateLoanInformation(loanInformationRequest);
@@ -79,7 +76,6 @@ public class LoanInformationController {
 	            @ApiResponse(code = 404, message = "not found!!!") })
 	
 	@GetMapping("/getLoanInfo/{loanNumber}")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<LoanInformation> getLoanInfoByLoanNumber(@PathVariable String loanNumber) throws LoanInformationNotFoundException{
 		logger.info("Entered getLoanInfoByLoanNumber method {}", loanNumber);
 		LoanInformation loanInfo= loanInformationService.findLoanInfoByLoanNum(loanNumber);
@@ -94,7 +90,6 @@ public class LoanInformationController {
 	            @ApiResponse(code = 403, message = "forbidden!!!"),
 	            @ApiResponse(code = 404, message = "not found!!!") })
 	@GetMapping("/getLoanInfoByEmail/{loanUserEmail}")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<LoanInformation>> getLoanInfoByLoanUserEmail(@PathVariable String loanUserEmail) throws LoanInformationNotFoundException{
 		logger.info("Entered getLoanInfoByLoanUserEmail method {}", loanUserEmail);
 		List<LoanInformation> loanInfo= loanInformationService.findLoanInfoByLoanUserEmail(loanUserEmail);
