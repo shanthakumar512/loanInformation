@@ -5,8 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @SpringBootApplication()
 @EnableDiscoveryClient
+@EnableSwagger2
 @PropertySource("classpath:application.properties")
 public class LoaninformationApplication {
 

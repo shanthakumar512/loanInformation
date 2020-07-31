@@ -5,10 +5,10 @@ package com.rabobank.loaninformation.services;
 
 import java.util.List;
 
+import com.rabobank.loaninformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.loaninformation.exceptions.LoanNumberAlreadyExixtsException;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
-import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 
 /**

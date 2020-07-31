@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +19,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,18 +31,17 @@ import java.util.Optional;
 
 import com.rabobank.loaninformation.H2JpaConfig;
 import com.rabobank.loaninformation.LoaninformationApplication;
+import com.rabobank.loaninformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.loaninformation.exceptions.LoanNumberAlreadyExixtsException;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.repository.LoanInformationRepository;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
 import com.rabobank.loaninformation.services.LoanInformationServiceImpl;
-import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 /**
  * @author Shanthakumar
  *
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {LoaninformationApplication.class, H2JpaConfig.class },
 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
@@ -94,7 +92,7 @@ public class LoanInformationControllerUnitTest {
 		@Rollback(false)
 		public void testUpdateLoanInfo() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
-			loanInformation1.setLoanUserEmail("abc@gmail.c");
+			loanInformation1.setLoanUserEmail("abc@gmail.cm");
 			loanInformation1.setLoanAmount(1234568);
 			loanInformation1.setLoanNumber("ABC1234S");
 			loanInformation1.setLoanTerm(45);
@@ -102,9 +100,42 @@ public class LoanInformationControllerUnitTest {
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1235R5");
 			
+			restTemplate.postForEntity(getRootUrl() + "/loanInfo/addLoanInfo", loanInformation1, LoanInformationRequest[].class);
+
 			
 			ResponseEntity<?> updatedEmployee = restTemplate.postForEntity(getRootUrl() + "/loanInfo/updateLoanInfo", loanInformation1, LoanInformationRequest.class);
 			assertNotNull(updatedEmployee);
+		}
+		
+		@Test
+		@Rollback(false)
+		public void testUpdateLoanInfoWithExcption() {
+			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
+			loanInformation1.setLoanUserEmail("abc@gmail.cm");
+			loanInformation1.setLoanAmount(1234568);
+			loanInformation1.setLoanNumber("ABC1234sS");
+			loanInformation1.setLoanTerm(45);
+			loanInformation1.setLoanStatus(active);
+			loanInformation1.setLoanMgtFees(7895);
+			loanInformation1.setOriginationAccount("ACB1235R5");
+			
+			Assertions.assertThrows(RestClientException.class,()-> restTemplate.postForEntity(getRootUrl() + "/loanInfo/updateLoanInfo", loanInformation1, LoanInformationRequest[].class));
+		}
+		
+		@Test
+		@Rollback(false)
+		public void testUserDetailsAlreadyExistsException() {
+			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
+			loanInformation1.setLoanUserEmail("abc@gmail.c");
+			loanInformation1.setLoanAmount(1234568);
+			loanInformation1.setLoanNumber(loanNumber);
+			loanInformation1.setLoanTerm(45);
+			loanInformation1.setLoanStatus(active);
+			loanInformation1.setLoanMgtFees(7895);
+			loanInformation1.setOriginationAccount("ACB1235R5");
+			
+			Assertions.assertThrows(RestClientException.class,()-> restTemplate.postForEntity(getRootUrl() + "/loanInfo/addLoanInfo", loanInformation1, LoanInformationRequest[].class));
+			
 		}
 		@Test
 		@Rollback(false)

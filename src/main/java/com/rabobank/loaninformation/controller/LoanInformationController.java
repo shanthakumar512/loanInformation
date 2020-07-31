@@ -17,11 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rabobank.loaninformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.loaninformation.exceptions.LoanNumberAlreadyExixtsException;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
 import com.rabobank.loaninformation.services.LoanInformationService;
-import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 
 @RestController
@@ -32,7 +36,13 @@ public class LoanInformationController {
 
 	@Autowired
 	LoanInformationService loanInformationService;
-
+	
+	@ApiOperation(value = "Add Loan information the System ", response = LoanInformation.class, tags = "addLoanInformation")
+	@ApiResponses(value = { 
+	            @ApiResponse(code = 200, message = "Success| Loan Information added successfully"),
+	            @ApiResponse(code = 401, message = "not authorized!"), 
+	            @ApiResponse(code = 403, message = "forbidden!!!"),
+	            @ApiResponse(code = 404, message = "not found!!!") })
 
 	@PostMapping("/addLoanInfo")
 	@PreAuthorize("hasRole('ADMIN')")
@@ -44,6 +54,14 @@ public class LoanInformationController {
 		return  new ResponseEntity<>(loanInformationList, HttpStatus.OK);
 	}
 	
+	
+	@ApiOperation(value = "Update the loan information in the System ", response = LoanInformation.class, tags = "updateLoanInformation")
+	@ApiResponses(value = { 
+	            @ApiResponse(code = 200, message = "Success|OK"),
+	            @ApiResponse(code = 401, message = "not authorized!"), 
+	            @ApiResponse(code = 403, message = "forbidden!!!"),
+	            @ApiResponse(code = 404, message = "not found!!!") })
+	
 	@PostMapping("/updateLoanInfo")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<LoanInformation> updateLoanInformation(@Valid @RequestBody LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException {	
@@ -52,6 +70,13 @@ public class LoanInformationController {
 		logger.info("Updated Loan Information successfully : {}", loanInformationRequest);
 		return  new ResponseEntity<>(loanInfo, HttpStatus.OK);
 	}
+	
+	@ApiOperation(value = "Get the loan information for given Loan number from the System ", response = LoanInformation.class, tags = "getLoanInfoByLoanNumber")
+	@ApiResponses(value = { 
+	            @ApiResponse(code = 200, message = "Success|OK"),
+	            @ApiResponse(code = 401, message = "not authorized!"), 
+	            @ApiResponse(code = 403, message = "forbidden!!!"),
+	            @ApiResponse(code = 404, message = "not found!!!") })
 	
 	@GetMapping("/getLoanInfo/{loanNumber}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -62,6 +87,12 @@ public class LoanInformationController {
 		return new ResponseEntity<>(loanInfo, HttpStatus.OK);
 	}
 	
+	@ApiOperation(value = "Get the loan information for given Loan number from the System ", response = LoanInformation.class, tags = "getLoanInfoByLoanUserEmail")
+	@ApiResponses(value = { 
+	            @ApiResponse(code = 200, message = "Success|OK"),
+	            @ApiResponse(code = 401, message = "not authorized!"), 
+	            @ApiResponse(code = 403, message = "forbidden!!!"),
+	            @ApiResponse(code = 404, message = "not found!!!") })
 	@GetMapping("/getLoanInfoByEmail/{loanUserEmail}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<LoanInformation>> getLoanInfoByLoanUserEmail(@PathVariable String loanUserEmail) throws LoanInformationNotFoundException{

@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.rabobank.loaninformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.loaninformation.exceptions.LoanNumberAlreadyExixtsException;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.repository.LoanInformationRepository;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
-import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 
 /**
@@ -31,7 +31,7 @@ public class LoanInformationServiceImpl implements LoanInformationService {
 	LoanInformationRepository loanInformationRepository;
 	
 	public LoanInformation addLoanInformation(LoanInformationRequest addLoanInformationRequest) throws LoanNumberAlreadyExixtsException {
-		logger.info("Entered addLoanInformation() method {} ", addLoanInformationRequest);
+		logger.debug("Entered addLoanInformation() method {} ", addLoanInformationRequest);
 		if(Boolean.FALSE.equals(loanInformationRepository.existsByLoanNumber(addLoanInformationRequest.getLoanNumber()))) {
 			logger.info("Loan Information not already exixts in LoanRepository  for LoanNumber:{} ", addLoanInformationRequest.getLoanNumber());
 			LoanInformation loanInformation= new LoanInformation(addLoanInformationRequest.getLoanUserEmail(),addLoanInformationRequest.getLoanNumber(), addLoanInformationRequest.getLoanAmount(), addLoanInformationRequest.getLoanTerm(), addLoanInformationRequest.getLoanStatus(), addLoanInformationRequest.getLoanMgtFees(),
@@ -47,15 +47,10 @@ public class LoanInformationServiceImpl implements LoanInformationService {
 	@Override
 	public LoanInformation updateLoanInformation(LoanInformationRequest loanInformationRequest) throws LoanInformationNotFoundException{
 		logger.info("Entered updateLoanInformation() method {} ", loanInformationRequest);
-		Optional<LoanInformation> loanInfo= loanInformationRepository.findByLoanNumber(loanInformationRequest.getLoanNumber());
-		logger.info("Optional<LoanInformation> returns {} ", loanInfo.isPresent());
-		LoanInformation loanInformation =null;
-		if(loanInfo.isPresent()) {
-			 loanInformation =loanInfo.get();
-		} else {
-			logger.info("Loan Information not found for Loan Number {} ", loanInformationRequest.getLoanNumber());
-			throw new LoanInformationNotFoundException("Loan Information not found for Loan Number"+loanInformationRequest.getLoanNumber());
-		}
+
+		LoanInformation loanInformation = loanInformationRepository.findByLoanNumber(loanInformationRequest.getLoanNumber()).
+				orElseThrow(()->new LoanInformationNotFoundException("Loan Information not found for Loan Number"+loanInformationRequest.getLoanNumber()));
+	
 		loanInformation.setLoanUserEmail(loanInformationRequest.getLoanUserEmail());
 		loanInformation.setLoanAmount(loanInformationRequest.getLoanAmount());
 		loanInformation.setLoanNumber(loanInformationRequest.getLoanNumber());
@@ -70,7 +65,7 @@ public class LoanInformationServiceImpl implements LoanInformationService {
 
 	@Override
 	public LoanInformation findLoanInfoByLoanNum(String loanNumber) throws LoanInformationNotFoundException {
-		logger.info("Entered findLoanInfoByLoanNum method {}", loanNumber);
+		logger.debug("Entered findLoanInfoByLoanNum method {}", loanNumber);
 		LoanInformation loanInfo=loanInformationRepository.findByLoanNumber(loanNumber).
 				orElseThrow(()-> new LoanInformationNotFoundException("Loan Information not found for Loan Number :"+loanNumber));
 		logger.info("Search result for LoanNumber {}", loanInfo.getLoanUserEmail());

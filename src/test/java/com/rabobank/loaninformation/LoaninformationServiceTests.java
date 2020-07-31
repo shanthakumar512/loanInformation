@@ -1,6 +1,8 @@
 package com.rabobank.loaninformation;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 
@@ -13,12 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.rabobank.loaninformation.exceptions.LoanInformationNotFoundException;
+import com.rabobank.loaninformation.exceptions.LoanNumberAlreadyExixtsException;
 import com.rabobank.loaninformation.model.LoanInformation;
 import com.rabobank.loaninformation.repository.LoanInformationRepository;
 import com.rabobank.loaninformation.requestdto.LoanInformationRequest;
 import com.rabobank.loaninformation.services.LoanInformationServiceImpl;
-import com.rabobank.userinformation.exceptions.LoanInformationNotFoundException;
-import com.rabobank.userinformation.exceptions.LoanNumberAlreadyExixtsException;
 
 @SpringBootTest(classes = {LoaninformationApplication.class, H2JpaConfig.class })
 @ActiveProfiles("test")
@@ -38,16 +40,17 @@ class LoaninformationServiceTests {
 	private String active="ACTIVE";
 	
 	private String originAccount="ACB123476";
+
+	private String loannum;
 	
 	
 	@Test
 	@Rollback(false)
 	void addLoanInfoTest( ) throws LoanNumberAlreadyExixtsException {
-		
 		final LoanInformationRequest loanInformation = new LoanInformationRequest();
 		loanInformation.setLoanUserEmail(email);
 		loanInformation.setLoanAmount(1234568);
-		loanInformation.setLoanNumber(loanNUmber);
+		loanInformation.setLoanNumber("LOAN895");
 		loanInformation.setLoanTerm(45);
 		loanInformation.setLoanStatus(active);
 		loanInformation.setLoanMgtFees(7895);
@@ -57,7 +60,7 @@ class LoaninformationServiceTests {
 
 	@Test
 	@Rollback(false)
-	final void testaddloaninfoWithAlreadyExisingLoanNum(){
+	final void testaddloaninfoWithAlreadyExisingLoanNum() throws LoanNumberAlreadyExixtsException{
 		
 		LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 		loanInformation1.setLoanUserEmail(email);
@@ -67,6 +70,7 @@ class LoaninformationServiceTests {
 		loanInformation1.setLoanStatus(active);
 		loanInformation1.setLoanMgtFees(7895);
 		loanInformation1.setOriginationAccount(originAccount);
+		loanInformationservice.addLoanInformation(loanInformation1);
 		Assertions.assertThrows(LoanNumberAlreadyExixtsException.class,()->loanInformationservice.addLoanInformation(loanInformation1));
 	}
 	
@@ -115,13 +119,22 @@ class LoaninformationServiceTests {
 	void findByLoanNumTest() throws LoanInformationNotFoundException  {
 		LoanInformation loanInfo = loanInformationservice.findLoanInfoByLoanNum(loanNUmber);
 		 assertEquals(loanInfo.getLoanNumber(), loanNUmber);
+		 List<LoanInformation> loanInfoEmail = loanInformationservice.findLoanInfoByLoanUserEmail(email);
+		 assertNotNull(loanInfoEmail.size());
 	}
 	
 	@Test
 	@Rollback(false)
 	void findByNotExistingLoanNumTest() {
-		Assertions.assertThrows(LoanInformationNotFoundException.class, ()->loanInformationservice.findLoanInfoByLoanNum(loanNUmber));
+		Assertions.assertThrows(LoanInformationNotFoundException.class, ()->loanInformationservice.findLoanInfoByLoanNum("LOAN1RBL2"));
 	}
+	
+	@Test
+	@Rollback(false)
+	void findByExistingLoanNumTest() {
+		Assertions.assertThrows(LoanInformationNotFoundException.class, ()->loanInformationservice.findLoanInfoByLoanNum(loannum));
+	}
+	
 	
 	@Test
 	@Rollback(false)

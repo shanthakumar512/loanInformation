@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.rabobank.userinformation.exceptions;
+package com.rabobank.loaninformation.exceptions;
 
 /**
  * @author Shanthakumar
