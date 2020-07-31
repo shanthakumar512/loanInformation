@@ -1,15 +1,12 @@
 package com.rabobank.loaninformation;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -24,7 +21,6 @@ import com.rabobank.loaninformation.services.LoanInformationServiceImpl;
 
 @SpringBootTest(classes = {LoaninformationApplication.class, H2JpaConfig.class })
 @ActiveProfiles("test")
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LoaninformationServiceTests {
 	
 	@Autowired
