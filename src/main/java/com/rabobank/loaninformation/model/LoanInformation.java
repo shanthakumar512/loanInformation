@@ -128,8 +128,7 @@ public class LoanInformation implements Serializable  {
 	 */
 	public LoanInformation(String loanUserEmail, @NotBlank @Size(max = 20) String loanNumber, @NotNull  double loanAmount,
 			@NotNull double loanTerm, @NotBlank String loanStatus,
-			@NotNull double loanMgtFees, @NotBlank @Size(max = 20) String originationAccount,
-			 Date originationDate) {
+			@NotNull double loanMgtFees, @NotBlank @Size(max = 20) String originationAccount) {
 		this.loanUserEmail=loanUserEmail;
 		this.loanNumber = loanNumber;
 		this.loanAmount = loanAmount;
@@ -137,7 +136,6 @@ public class LoanInformation implements Serializable  {
 		this.loanStatus = loanStatus;
 		this.loanMgtFees = loanMgtFees;
 		this.originationAccount = originationAccount;
-		this.originationDate = originationDate;
 	}
 	/**
 	 * @return the loanStatus

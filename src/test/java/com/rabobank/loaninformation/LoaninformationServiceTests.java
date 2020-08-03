@@ -1,5 +1,6 @@
 package com.rabobank.loaninformation;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -52,6 +53,7 @@ class LoaninformationServiceTests {
 		loanInformation.setLoanMgtFees(7895);
 		loanInformation.setOriginationAccount(originAccount);
 		loanInformationservice.addLoanInformation(loanInformation);
+		Assertions.assertNotNull(loanInformation);
 	}
 
 	@Test
@@ -93,6 +95,7 @@ class LoaninformationServiceTests {
 		loanInformation1.setLoanMgtFees(7895);
 		loanInformation1.setOriginationAccount("ACB1234");
 		loanInformationservice.updateLoanInformation(loanInformation1);
+		Assertions.assertNotNull(loanInformation);
 	}
 	
 	@Test()
@@ -116,7 +119,7 @@ class LoaninformationServiceTests {
 		LoanInformation loanInfo = loanInformationservice.findLoanInfoByLoanNum(loanNUmber);
 		 assertEquals(loanInfo.getLoanNumber(), loanNUmber);
 		 List<LoanInformation> loanInfoEmail = loanInformationservice.findLoanInfoByLoanUserEmail(email);
-		 assertNotNull(loanInfoEmail.size());
+		 Assertions.assertNotNull(loanInfoEmail);
 	}
 	
 	@Test

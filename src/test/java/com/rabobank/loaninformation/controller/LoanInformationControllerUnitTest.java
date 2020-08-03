@@ -48,7 +48,7 @@ webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @ActiveProfiles("test")
 @EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
-public class LoanInformationControllerUnitTest {
+ class LoanInformationControllerUnitTest {
 	
 		private String loanNumber="ABC123454";
 	
@@ -73,7 +73,7 @@ public class LoanInformationControllerUnitTest {
 		}
 		@Test
 		@Rollback(false)
-		public void testCreateLoanInfo() {
+		void testCreateLoanInfo() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.c");
 			loanInformation1.setLoanAmount(1234568);
@@ -91,7 +91,7 @@ public class LoanInformationControllerUnitTest {
 
 		@Test
 		@Rollback(false)
-		public void testUpdateLoanInfo() {
+		 void testUpdateLoanInfo() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.cm");
 			loanInformation1.setLoanAmount(1234568);
@@ -110,7 +110,7 @@ public class LoanInformationControllerUnitTest {
 		
 		@Test
 		@Rollback(false)
-		public void testUpdateLoanInfoWithExcption() {
+		 void testUpdateLoanInfoWithExcption() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.cm");
 			loanInformation1.setLoanAmount(1234568);
@@ -119,13 +119,13 @@ public class LoanInformationControllerUnitTest {
 			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1235R5");
-			
-			Assertions.assertThrows(RestClientException.class,()-> restTemplate.postForEntity(getRootUrl() + "/loanInfo/updateLoanInfo", loanInformation1, LoanInformationRequest[].class));
+			String URL=getRootUrl() + "/loanInfo/updateLoanInfo";
+			Assertions.assertThrows(RestClientException.class,()-> restTemplate.postForEntity(URL, loanInformation1, LoanInformationRequest[].class));
 		}
 		
 		@Test
 		@Rollback(false)
-		public void testUserDetailsAlreadyExistsException() {
+		 void testUserDetailsAlreadyExistsException() {
 			LoanInformationRequest loanInformation1 = new LoanInformationRequest();
 			loanInformation1.setLoanUserEmail("abc@gmail.c");
 			loanInformation1.setLoanAmount(1234568);
@@ -134,13 +134,13 @@ public class LoanInformationControllerUnitTest {
 			loanInformation1.setLoanStatus(active);
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1235R5");
-			
-			Assertions.assertThrows(RestClientException.class,()-> restTemplate.postForEntity(getRootUrl() + "/loanInfo/addLoanInfo", loanInformation1, LoanInformationRequest[].class));
+			String URL=getRootUrl() + "/loanInfo/addLoanInfo";
+			Assertions.assertThrows(RestClientException.class,()-> restTemplate.postForEntity(URL, loanInformation1, LoanInformationRequest[].class));
 			
 		}
 		@Test
 		@Rollback(false)
-		public void testsGetLoanInfrmationFromLoanNumber() {
+		 void testsGetLoanInfrmationFromLoanNumber() {
 			 Map<String, String> uriVariables = new HashMap<>();
 			    uriVariables.put("loanNumber", loanNumber);
 
@@ -152,7 +152,7 @@ public class LoanInformationControllerUnitTest {
 		
 		@Test
 		@Rollback(false)
-	public void testsGetLoanInfrmationFromEmail() {
+	 void testsGetLoanInfrmationFromEmail() {
 		HttpHeaders headers = new HttpHeaders();
 		HttpEntity<String> entity = new HttpEntity<>(null, headers);
 		Map<String, String> uriVariables = new HashMap<>();
@@ -219,31 +219,32 @@ public class LoanInformationControllerUnitTest {
 			loanInformation1.setLoanMgtFees(7895);
 			loanInformation1.setOriginationAccount("ACB1234");
 			loanInformationservice.addLoanInformation(loanInformation1);
+			assertNotNull(loanInformation1);
 		}
 		
 		@Test
-		public void givenEmptyDBWhenFindOneByNameThenReturnEmptyOptional() {
+		 void givenEmptyDBWhenFindOneByNameThenReturnEmptyOptional() {
 			Optional<LoanInformation> foundloanInfo = loanInformationRepository.findByLoanNumber("ABC");
 
 			assertFalse(foundloanInfo.isPresent());
 		}
 
 		@Test
-		public void givenEmptyDBWhenFindByLoanNumThenReturnFalse() {
+		 void givenEmptyDBWhenFindByLoanNumThenReturnFalse() {
 			assertFalse(loanInformationRepository.existsByLoanNumber("ABC"));
 		}
 
 		@Test
-		public void givenEmptyDBWhenFindOneByNameThenReturnOptional() {
+		 void givenEmptyDBWhenFindOneByNameThenReturnOptional() {
 
-			LoanInformation loaninfo = new LoanInformation("abc@g.m", "LAN12374", 35356436, 33, active, 346, "2535", null);
+			LoanInformation loaninfo = new LoanInformation("abc@g.m", "LAN12374", 35356436, 33, active, 346, "2535");
 			loanInformationRepository.save(loaninfo);
 			Optional<LoanInformation> foundloanInfo = loanInformationRepository.findByLoanNumber("LAN12374");
 			assertTrue(foundloanInfo.isPresent());
 		}
 
 		@Test
-		public void givenEmptyDBWhenFindOneByNameThenReturnTrue() {
+		 void givenEmptyDBWhenFindOneByNameThenReturnTrue() {
 			Optional<LoanInformation> foundloanInfo = loanInformationRepository.findByLoanNumber("LAN12323");
 			assertFalse(foundloanInfo.isPresent());
 		}

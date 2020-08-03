@@ -4,7 +4,6 @@
 package com.rabobank.loaninformation.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class LoanInformationServiceImpl implements LoanInformationService {
 		if(Boolean.FALSE.equals(loanInformationRepository.existsByLoanNumber(addLoanInformationRequest.getLoanNumber()))) {
 			logger.info("Loan Information not already exixts in LoanRepository  for LoanNumber:{} ", addLoanInformationRequest.getLoanNumber());
 			LoanInformation loanInformation= new LoanInformation(addLoanInformationRequest.getLoanUserEmail(),addLoanInformationRequest.getLoanNumber(), addLoanInformationRequest.getLoanAmount(), addLoanInformationRequest.getLoanTerm(), addLoanInformationRequest.getLoanStatus(), addLoanInformationRequest.getLoanMgtFees(),
-					addLoanInformationRequest.getOriginationAccount(), addLoanInformationRequest.getOriginationDate());
+					addLoanInformationRequest.getOriginationAccount());
 			loanInformationRepository.save(loanInformation);
 			return loanInformation;
 		} else {
