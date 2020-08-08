@@ -82,10 +82,6 @@ public class LoanInformationRequest {
 		this.loanAmount = loanAmount;
 	}
 	
-	public LoanInformationRequest() {
-		
-	}
-
 	/**
 	 * @return the loanTerm
 	 */
